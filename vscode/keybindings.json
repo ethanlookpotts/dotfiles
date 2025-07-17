@@ -1,0 +1,45 @@
+[
+    // workspace navigation
+    {
+        "key": ", f b",
+        "when": "!editorFocus",
+        "command": "workbench.files.action.focusFilesExplorer",
+    },
+    {
+        "key": ", f c",
+        "when": "!editorFocus",
+        "command": "aichat.newfollowupaction",
+    },
+    {
+        "key": ", f e",
+        "when": "!editorFocus",
+        "command": "workbench.action.focusActiveEditorGroup",
+    },
+    {
+        "key": ", f t",
+        "when": "!editorFocus",
+        "command": "workbench.action.terminal.focus",
+    },
+
+    // grep/search
+    {
+        "key": ", g c",
+        "when": "!editorFocus",
+        "command": "workbench.action.showCommands"
+    },
+    {
+        "key": ", g f",
+        "when": "!editorFocus",
+        "command": "workbench.action.quickOpen"
+    },
+    {
+        "key": ", g s",
+        "when": "!editorFocus",
+        "command": "workbench.action.findInFiles"
+    },
+    {
+        "key": ", c c",
+        "when": "!editorFocus",
+        "command": "composer.createNew",
+    },
+]

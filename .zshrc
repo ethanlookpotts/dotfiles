@@ -6,7 +6,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -106,18 +106,17 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias k="kubectl"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-source ~/.viamdevrc
+alias k="kubectl"
+source <(kubectl completion zsh)
+
+source <(fzf --zsh)
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export PATH="$PATH:$(go env GOPATH)/bin"
-
-alias gl="watch -c git -c color.ui=always log --decorate --graph --oneline --branches={'*ethanlook*','*main*'}"
+alias gl="watch -c git -c color.ui=always log --decorate --graph --oneline --branches={'*elookpotts*','*main*'}"
 alias gs="watch -c git -c color.ui=always status -s"
 
 alias vim="nvim"
@@ -129,3 +128,4 @@ eval $(thefuck --alias)
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+

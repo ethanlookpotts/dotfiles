@@ -5,7 +5,7 @@ I like a lot of [this blog post](https://www.josean.com/posts/terminal-setup) fo
 Set up git:
 
 ```
-git config --global user.email "ethan.look@gmail.com"
+git config --global user.email "ethanlookpotts@gmail.com"
 git config --global user.name "Ethan Look-Potts"
 ```
 
