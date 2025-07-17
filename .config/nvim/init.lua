@@ -1,6 +1,6 @@
 if vim.g.vscode then
-	require("ethanlook.vscode")
+	require("ethanlookpotts.vscode")
 else
-	require("ethanlook.core")
-	require("ethanlook.lazy")
+	require("ethanlookpotts.core")
+	require("ethanlookpotts.lazy")
 end

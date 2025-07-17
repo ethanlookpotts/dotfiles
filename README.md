@@ -14,7 +14,7 @@ git config --global user.name "Ethan Look-Potts"
 Clone this repo and link dotfiles:
 
 ```
-git clone git@github.com:ethanlook/dotfiles.git
+git clone git@github.com:ethanlookpotts/dotfiles.git
 ```
 
 Follow [this blog](https://www.josean.com/posts/terminal-setup) to install most of the things you like. Then:

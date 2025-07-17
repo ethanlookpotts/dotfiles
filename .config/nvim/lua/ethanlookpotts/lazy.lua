@@ -12,8 +12,8 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  { import = "ethanlook.plugins" },
-  { import = "ethanlook.plugins.lsp" },
+  { import = "ethanlookpotts.plugins" },
+  { import = "ethanlookpotts.plugins.lsp" },
 },
 {
   install = {
