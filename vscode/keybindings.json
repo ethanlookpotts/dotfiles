@@ -42,4 +42,8 @@
         "when": "!editorFocus",
         "command": "composer.createNew",
     },
+    {
+        "key": "cmd+e",
+        "command": "composerMode.background"
+    },
 ]
