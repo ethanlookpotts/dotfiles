@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Development Cheatsheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --terminal-bg: #0a0e14;
+            --terminal-fg: #33ff66;
+            --terminal-dim: #1a8040;
+            --terminal-bright: #66ff99;
+            --mono: 'JetBrains Mono', 'Courier New', monospace;
+        }
+
+        body {
+            font-family: var(--mono);
+            background: var(--terminal-bg);
+            color: var(--terminal-fg);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-size: 14px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: #000000;
+            color: var(--terminal-fg);
+            overflow-y: auto;
+            padding: 40px 0 40px;
+            border-right: 2px solid var(--terminal-dim);
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 0 24px 32px;
+            border-bottom: 2px solid var(--terminal-dim);
+        }
+
+        .sidebar-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-header h1::before {
+            content: '> ';
+            color: var(--terminal-bright);
+        }
+
+        .sidebar-header p {
+            font-size: 11px;
+            opacity: 0.6;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-nav {
+            padding: 32px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 0 24px 10px;
+            opacity: 0.4;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 8px 24px;
+            color: var(--terminal-fg);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link::before {
+            content: '$ ';
+            opacity: 0.3;
+            margin-right: 4px;
+        }
+
+        .nav-link:hover {
+            background: rgba(51, 255, 102, 0.08);
+            border-left-color: var(--terminal-fg);
+        }
+
+        .nav-link:hover::before {
+            opacity: 1;
+            color: var(--terminal-bright);
+        }
+
+        .nav-link.active {
+            background: rgba(51, 255, 102, 0.12);
+            border-left-color: var(--terminal-bright);
+            color: var(--terminal-bright);
+        }
+
+        .nav-link.active::before {
+            content: '▸ ';
+            opacity: 1;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 101;
+            background: #000000;
+            color: var(--terminal-fg);
+            border: 2px solid var(--terminal-dim);
+            padding: 10px 16px;
+            cursor: pointer;
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--terminal-dim);
+            border-color: var(--terminal-fg);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 60px 80px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .floating-left,
+        .floating-right {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 50;
+        }
+
+        .floating-left {
+            left: 300px;
+        }
+
+        .floating-right {
+            right: 40px;
+        }
+
+        .floating-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--terminal-dim);
+            padding: 16px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+        }
+
+        .floating-panel h4 {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--terminal-bright);
+            margin-bottom: 12px;
+        }
+
+        .floating-panel h4::before {
+            content: '> ';
+        }
+
+        .quick-search input {
+            width: 100%;
+            background: rgba(51, 255, 102, 0.05);
+            border: 1px solid var(--terminal-dim);
+            color: var(--terminal-fg);
+            padding: 10px 12px;
+            font-family: var(--mono);
+            font-size: 12px;
+            outline: none;
+        }
+
+        .quick-search input:focus {
+            border-color: var(--terminal-fg);
+            background: rgba(51, 255, 102, 0.1);
+        }
+
+        .quick-search input::placeholder {
+            color: var(--terminal-dim);
+        }
+
+        .quick-links a {
+            display: block;
+            color: var(--terminal-fg);
+            text-decoration: none;
+            font-size: 12px;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-left: 2px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .quick-links a::before {
+            content: '→ ';
+            opacity: 0.4;
+            margin-right: 6px;
+        }
+
+        .quick-links a:hover {
+            background: rgba(51, 255, 102, 0.08);
+            border-left-color: var(--terminal-fg);
+            padding-left: 16px;
+        }
+
+        .floating-button {
+            display: block;
+            width: 100%;
+            background: rgba(51, 255, 102, 0.1);
+            border: 2px solid var(--terminal-dim);
+            color: var(--terminal-fg);
+            padding: 12px;
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s;
+        }
+
+        .floating-button:hover {
+            background: rgba(51, 255, 102, 0.2);
+            border-color: var(--terminal-bright);
+            color: var(--terminal-bright);
+        }
+
+        .quick-ref {
+            margin-bottom: 80px;
+            padding-bottom: 60px;
+            border-bottom: 2px solid var(--terminal-dim);
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            color: var(--terminal-bright);
+        }
+
+        .section-title::before {
+            content: '# ';
+            color: var(--terminal-fg);
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            margin-bottom: 48px;
+            opacity: 0.5;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px 48px;
+        }
+
+        .quick-category h3 {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--terminal-dim);
+            color: var(--terminal-bright);
+        }
+
+        .quick-commands {
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .content-section {
+            margin-bottom: 80px;
+        }
+
+        .content-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            color: var(--terminal-bright);
+        }
+
+        .content-section h2::before {
+            content: '## ';
+            color: var(--terminal-fg);
+        }
+
+        .content-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 48px 0 20px;
+            letter-spacing: 1px;
+            color: var(--terminal-fg);
+        }
+
+        .content-section h3::before {
+            content: '### ';
+            color: var(--terminal-dim);
+            margin-right: 8px;
+        }
+
+        .command-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            font-size: 13px;
+        }
+
+        .command-table thead {
+            border-bottom: 2px solid var(--terminal-dim);
+        }
+
+        .command-table th {
+            text-align: left;
+            padding: 12px 32px 12px 0;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--terminal-bright);
+        }
+
+        .command-table tbody tr {
+            border-bottom: 1px solid rgba(26, 128, 64, 0.3);
+        }
+
+        .command-table tbody tr:hover {
+            background: rgba(51, 255, 102, 0.05);
+        }
+
+        .command-table td {
+            padding: 12px 32px 12px 0;
+        }
+
+        .command-table td:first-child {
+            font-size: 12px;
+            font-weight: 600;
+            width: 200px;
+            color: var(--terminal-bright);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 48px;
+        }
+
+        code {
+            font-family: var(--mono);
+            font-size: 12px;
+            background: rgba(51, 255, 102, 0.1);
+            color: var(--terminal-bright);
+            padding: 2px 8px;
+            border: 1px solid var(--terminal-dim);
+        }
+
+        .divider {
+            height: 2px;
+            background: var(--terminal-dim);
+            margin: 60px 0;
+        }
+
+        @media (max-width: 1800px) {
+            .floating-left {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1600px) {
+            .floating-right {
+                right: 20px;
+            }
+            .floating-panel {
+                min-width: 180px;
+            }
+        }
+
+        @media (max-width: 1400px) {
+            .quick-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .floating-right {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .quick-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            .command-table td:first-child {
+                width: 160px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-toggle {
+                display: block;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 60px 24px;
+            }
+            .section-title {
+                font-size: 24px;
+            }
+            .content-section h2 {
+                font-size: 20px;
+            }
+            .command-table {
+                font-size: 12px;
+            }
+            .command-table td:first-child {
+                width: 120px;
+                font-size: 11px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .sidebar,
+            .sidebar-toggle,
+            .floating-left,
+            .floating-right {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ Menu</button>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1>Cheatsheet</h1>
+            <p>Development Environment</p>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Overview</div>
+                <a href="#quick-ref" class="nav-link">Quick Reference</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Neovim</div>
+                <a href="#vim-basics" class="nav-link">Movement & Modes</a>
+                <a href="#vim-editing" class="nav-link">Editing</a>
+                <a href="#vim-text-objects" class="nav-link">Text Objects</a>
+                <a href="#vim-search" class="nav-link">Search & Replace</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Custom</div>
+                <a href="#telescope" class="nav-link">Telescope</a>
+                <a href="#lsp" class="nav-link">LSP</a>
+                <a href="#git" class="nav-link">Git</a>
+                <a href="#formatting" class="nav-link">Format & Lint</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Tmux</div>
+                <a href="#tmux-basics" class="nav-link">Sessions & Windows</a>
+                <a href="#tmux-panes" class="nav-link">Panes</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Shell</div>
+                <a href="#zsh-basics" class="nav-link">Zsh Hotkeys</a>
+                <a href="#git-aliases" class="nav-link">Git Aliases</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Tools</div>
+                <a href="#fzf" class="nav-link">FZF</a>
+            </div>
+        </div>
+    </nav>
+
+    <aside class="floating-left">
+        <div class="floating-panel">
+            <h4>Quick Jump</h4>
+            <div class="quick-links">
+                <a href="#quick-ref">Quick Ref</a>
+                <a href="#vim-basics">Vim</a>
+                <a href="#telescope">Telescope</a>
+                <a href="#lsp">LSP</a>
+                <a href="#git">Git</a>
+                <a href="#tmux-basics">Tmux</a>
+                <a href="#zsh-basics">Shell</a>
+            </div>
+        </div>
+    </aside>
+
+    <aside class="floating-right">
+        <div class="floating-panel quick-search">
+            <h4>Search</h4>
+            <input type="text" id="searchInput" placeholder="Filter commands...">
+        </div>
+        <div class="floating-panel">
+            <button class="floating-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑ Top</button>
+        </div>
+        <div class="floating-panel">
+            <h4>Leader</h4>
+            <div style="padding: 8px 12px; font-size: 11px; opacity: 0.7;">&lt;leader&gt; = SPACE</div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <section id="quick-ref" class="quick-ref">
+                <h1 class="section-title">Quick Reference</h1>
+                <p class="section-subtitle">Most frequently used commands</p>
+
+                <div class="quick-grid">
+                    <div class="quick-category">
+                        <h3>Files</h3>
+                        <div class="quick-commands">
+                            &lt;SPC&gt;ff — Find files<br>
+                            &lt;SPC&gt;fs — Search in files<br>
+                            &lt;SPC&gt;fw — Find word<br>
+                            &lt;SPC&gt;fr — Recent files<br>
+                            &lt;SPC&gt;fb — File browser
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Code Nav</h3>
+                        <div class="quick-commands">
+                            gd — Go to definition<br>
+                            gr — Show references<br>
+                            K — Hover docs<br>
+                            &lt;SPC&gt;ca — Code actions<br>
+                            &lt;SPC&gt;rn — Rename
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Diagnostics</h3>
+                        <div class="quick-commands">
+                            [d — Previous diagnostic<br>
+                            ]d — Next diagnostic<br>
+                            &lt;SPC&gt;db — Buffer diagnostics<br>
+                            &lt;SPC&gt;dl — Line diagnostics
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Git</h3>
+                        <div class="quick-commands">
+                            &lt;SPC&gt;gd — Diff view<br>
+                            &lt;SPC&gt;gp — Preview hunk<br>
+                            &lt;SPC&gt;gb — Blame<br>
+                            &lt;SPC&gt;gs — Stage hunk<br>
+                            &lt;SPC&gt;gr — Reset hunk
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Format</h3>
+                        <div class="quick-commands">
+                            &lt;SPC&gt;mp — Format<br>
+                            &lt;SPC&gt;mc — Format changed<br>
+                            &lt;SPC&gt;ml — Lint
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Editing</h3>
+                        <div class="quick-commands">
+                            gcc — Toggle comment<br>
+                            &lt;SPC&gt;yr — Yank rel path<br>
+                            &lt;SPC&gt;ya — Yank abs path<br>
+                            jk — Exit insert
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Window</h3>
+                        <div class="quick-commands">
+                            Ctrl+hjkl — Navigate<br>
+                            Alt+hjkl — Resize<br>
+                            &lt;SPC&gt;sm — Maximize<br>
+                            &lt;SPC&gt;sv — Split vertical
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Vim Basics</h3>
+                        <div class="quick-commands">
+                            hjkl — Move cursor<br>
+                            w/b/e — Word nav<br>
+                            0/$ — Line start/end<br>
+                            gg/G — File start/end
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Tmux</h3>
+                        <div class="quick-commands">
+                            Ctrl+A — Prefix<br>
+                            Prefix d — Detach<br>
+                            Prefix c — New window<br>
+                            Prefix % — Split horiz
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Shell</h3>
+                        <div class="quick-commands">
+                            ff — nvim + telescope<br>
+                            killport [port]<br>
+                            gl — git log<br>
+                            gs — git status
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>Zsh</h3>
+                        <div class="quick-commands">
+                            Ctrl+A — Start of line<br>
+                            Ctrl+E — End of line<br>
+                            Ctrl+R — Search history<br>
+                            Ctrl+] — Kill to end
+                        </div>
+                    </div>
+
+                    <div class="quick-category">
+                        <h3>FZF</h3>
+                        <div class="quick-commands">
+                            Ctrl+R — History search<br>
+                            Ctrl+T — File search<br>
+                            Alt+C — cd to dir
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="vim-basics" class="content-section">
+                <h2>NEOVIM</h2>
+                <p class="section-subtitle">Core Vim commands</p>
+
+                <h3>Movement</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>h j k l</td><td>Move cursor left/down/up/right</td></tr>
+                        <tr><td>w / b / e</td><td>Move forward/backward by word</td></tr>
+                        <tr><td>0 / $</td><td>Move to start/end of line</td></tr>
+                        <tr><td>gg / G</td><td>Go to start/end of file</td></tr>
+                        <tr><td>:{number}</td><td>Go to line number</td></tr>
+                        <tr><td>%</td><td>Jump to matching bracket</td></tr>
+                        <tr><td>Ctrl+d / Ctrl+u</td><td>Scroll down/up half page</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="vim-editing">Editing</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>i / a</td><td>Insert before/after cursor</td></tr>
+                        <tr><td>o / O</td><td>New line below/above</td></tr>
+                        <tr><td>v / V</td><td>Visual mode (char/line)</td></tr>
+                        <tr><td>dd / yy / p</td><td>Delete/yank/paste line</td></tr>
+                        <tr><td>u / Ctrl+r</td><td>Undo/redo</td></tr>
+                        <tr><td>x</td><td>Delete character</td></tr>
+                        <tr><td>.</td><td>Repeat last command</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="vim-text-objects">Text Objects</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>ciw / diw</td><td>Change/delete inner word</td></tr>
+                        <tr><td>ci" / di"</td><td>Change/delete inside quotes</td></tr>
+                        <tr><td>ci( / di(</td><td>Change/delete inside parens</td></tr>
+                        <tr><td>cit / dit</td><td>Change/delete inside tag</td></tr>
+                        <tr><td>yip / dap</td><td>Yank/delete a paragraph</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="vim-search">Search & Replace</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>/pattern</td><td>Search forward</td></tr>
+                        <tr><td>n / N</td><td>Next/previous result</td></tr>
+                        <tr><td>*</td><td>Search word under cursor</td></tr>
+                        <tr><td>:%s/old/new/g</td><td>Replace all in file</td></tr>
+                        <tr><td>:noh</td><td>Clear search highlight</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="divider"></div>
+
+            <section id="telescope" class="content-section">
+                <h2>CUSTOM KEYMAPS</h2>
+                <p class="section-subtitle">Custom Neovim keybindings</p>
+
+                <h3>Telescope</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Keybinding</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>&lt;leader&gt;ff</td><td>Find files</td></tr>
+                        <tr><td>&lt;leader&gt;fs</td><td>Live grep (search in files)</td></tr>
+                        <tr><td>&lt;leader&gt;fw</td><td>Find word under cursor</td></tr>
+                        <tr><td>&lt;leader&gt;fr</td><td>Recent files</td></tr>
+                        <tr><td>&lt;leader&gt;fb</td><td>File browser</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="lsp">LSP</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Keybinding</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>gd</td><td>Go to definition</td></tr>
+                        <tr><td>gr</td><td>Show references</td></tr>
+                        <tr><td>gD</td><td>Go to declaration</td></tr>
+                        <tr><td>gi</td><td>Show implementations</td></tr>
+                        <tr><td>gt</td><td>Show type definitions</td></tr>
+                        <tr><td>K</td><td>Hover documentation</td></tr>
+                        <tr><td>&lt;leader&gt;ca</td><td>Code actions</td></tr>
+                        <tr><td>&lt;leader&gt;rn</td><td>Rename symbol</td></tr>
+                        <tr><td>&lt;leader&gt;rs</td><td>Restart LSP</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Diagnostics</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Keybinding</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>[d</td><td>Previous diagnostic</td></tr>
+                        <tr><td>]d</td><td>Next diagnostic</td></tr>
+                        <tr><td>&lt;leader&gt;db</td><td>Show buffer diagnostics</td></tr>
+                        <tr><td>&lt;leader&gt;dl</td><td>Show line diagnostics</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="git">Git</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Keybinding</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>&lt;leader&gt;gd</td><td>Git diff view</td></tr>
+                        <tr><td>&lt;leader&gt;gp</td><td>Preview hunk</td></tr>
+                        <tr><td>&lt;leader&gt;gb</td><td>Git blame</td></tr>
+                        <tr><td>&lt;leader&gt;gs</td><td>Stage hunk</td></tr>
+                        <tr><td>&lt;leader&gt;gr</td><td>Reset hunk</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="formatting">Format & Lint</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Keybinding</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>&lt;leader&gt;mp</td><td>Format file or range</td></tr>
+                        <tr><td>&lt;leader&gt;mc</td><td>Format changed lines</td></tr>
+                        <tr><td>&lt;leader&gt;ml</td><td>Trigger linting</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Editing</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Keybinding</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>gcc</td><td>Toggle line comment</td></tr>
+                        <tr><td>gbc</td><td>Toggle block comment</td></tr>
+                        <tr><td>&lt;leader&gt;yr</td><td>Yank relative path</td></tr>
+                        <tr><td>&lt;leader&gt;ya</td><td>Yank absolute path</td></tr>
+                        <tr><td>jk</td><td>Exit insert mode</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Window Management</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Keybinding</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Ctrl+h/j/k/l</td><td>Navigate splits</td></tr>
+                        <tr><td>Alt+h/j/k/l</td><td>Resize splits</td></tr>
+                        <tr><td>&lt;leader&gt;sm</td><td>Maximize/minimize toggle</td></tr>
+                        <tr><td>&lt;leader&gt;sv</td><td>Split vertical</td></tr>
+                        <tr><td>&lt;leader&gt;sh</td><td>Split horizontal</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="divider"></div>
+
+            <section id="tmux-basics" class="content-section">
+                <h2>TMUX</h2>
+                <p class="section-subtitle">Terminal multiplexer (prefix: <code>Ctrl+A</code>)</p>
+
+                <h3>Sessions & Windows</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>tmux</td><td>Start new session</td></tr>
+                        <tr><td>tmux attach</td><td>Attach to session</td></tr>
+                        <tr><td>Prefix d</td><td>Detach from session</td></tr>
+                        <tr><td>Prefix c</td><td>Create new window</td></tr>
+                        <tr><td>Prefix n / p</td><td>Next/previous window</td></tr>
+                        <tr><td>Prefix 0-9</td><td>Switch to window by number</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="tmux-panes">Panes</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Prefix %</td><td>Split horizontal</td></tr>
+                        <tr><td>Prefix "</td><td>Split vertical</td></tr>
+                        <tr><td>Prefix z</td><td>Toggle zoom</td></tr>
+                        <tr><td>Prefix x</td><td>Kill pane</td></tr>
+                        <tr><td>Ctrl+h/j/k/l</td><td>Navigate panes (smart-splits)</td></tr>
+                        <tr><td>Alt+h/j/k/l</td><td>Resize panes (smart-splits)</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Copy Mode</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Prefix [</td><td>Enter copy mode</td></tr>
+                        <tr><td>Space</td><td>Start selection</td></tr>
+                        <tr><td>Enter</td><td>Copy selection</td></tr>
+                        <tr><td>Prefix ]</td><td>Paste</td></tr>
+                        <tr><td>q / ESC</td><td>Exit copy mode</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="divider"></div>
+
+            <section id="zsh-basics" class="content-section">
+                <h2>SHELL (ZSH)</h2>
+                <p class="section-subtitle">Zsh with oh-my-zsh and Powerlevel10k</p>
+
+                <h3>Zsh Hotkeys</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Keybinding</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Ctrl+A</td><td>Start of line</td></tr>
+                        <tr><td>Ctrl+E</td><td>End of line</td></tr>
+                        <tr><td>Ctrl+]</td><td>Kill to end of line</td></tr>
+                        <tr><td>Ctrl+U</td><td>Kill to start of line</td></tr>
+                        <tr><td>Ctrl+W</td><td>Kill previous word</td></tr>
+                        <tr><td>Ctrl+Y</td><td>Yank (paste)</td></tr>
+                        <tr><td>Ctrl+R</td><td>Search history</td></tr>
+                        <tr><td>Ctrl+L</td><td>Clear screen</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="git-aliases">Git Aliases</h3>
+                <div class="two-column">
+                    <table class="command-table">
+                        <thead>
+                            <tr>
+                                <th>Alias</th>
+                                <th>Command</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>gst</td><td>git status</td></tr>
+                            <tr><td>ga</td><td>git add</td></tr>
+                            <tr><td>gaa</td><td>git add --all</td></tr>
+                            <tr><td>gc</td><td>git commit -v</td></tr>
+                            <tr><td>gco</td><td>git checkout</td></tr>
+                            <tr><td>gcb</td><td>git checkout -b</td></tr>
+                            <tr><td>gp</td><td>git push</td></tr>
+                            <tr><td>gl</td><td>git pull</td></tr>
+                        </tbody>
+                    </table>
+
+                    <table class="command-table">
+                        <thead>
+                            <tr>
+                                <th>Alias</th>
+                                <th>Command</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>gd</td><td>git diff</td></tr>
+                            <tr><td>glog</td><td>git log --oneline</td></tr>
+                            <tr><td>gb</td><td>git branch</td></tr>
+                            <tr><td>gm</td><td>git merge</td></tr>
+                            <tr><td>gsta</td><td>git stash</td></tr>
+                            <tr><td>gstp</td><td>git stash pop</td></tr>
+                            <tr><td>grh</td><td>git reset HEAD</td></tr>
+                            <tr><td>grhh</td><td>git reset --hard</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Custom Commands</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>ff</td><td>Open nvim with Telescope</td></tr>
+                        <tr><td>killport [port]</td><td>Kill process on port</td></tr>
+                        <tr><td>gl</td><td>Watch git log</td></tr>
+                        <tr><td>gs</td><td>Watch git status</td></tr>
+                        <tr><td>k</td><td>kubectl alias</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="divider"></div>
+
+            <section id="fzf" class="content-section">
+                <h2>TOOLS</h2>
+                <p class="section-subtitle">Command-line utilities</p>
+
+                <h3>FZF</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Keybinding</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Ctrl+R</td><td>Fuzzy search history</td></tr>
+                        <tr><td>Ctrl+T</td><td>Fuzzy find files</td></tr>
+                        <tr><td>Alt+C</td><td>Fuzzy cd to directory</td></tr>
+                        <tr><td>↑ / ↓</td><td>Navigate results</td></tr>
+                        <tr><td>Tab</td><td>Multi-select toggle</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Ripgrep</h3>
+                <table class="command-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>rg "pattern"</td><td>Search for pattern</td></tr>
+                        <tr><td>rg -i "pattern"</td><td>Case-insensitive</td></tr>
+                        <tr><td>rg -t py "pattern"</td><td>Search only Python files</td></tr>
+                        <tr><td>rg -l "pattern"</td><td>Show only filenames</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // Navigation active state
+        const allElements = document.querySelectorAll('[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        function updateActiveNav() {
+            let current = '';
+            const scrollPos = window.pageYOffset + 250;
+
+            allElements.forEach(el => {
+                if (scrollPos >= el.offsetTop){
+                    current = el.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveNav);
+        updateActiveNav();
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('.command-table tbody tr');
+                const quickCommands = document.querySelectorAll('.quick-commands');
+
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(query) ? '' : 'none';
+                });
+
+                quickCommands.forEach(block => {
+                    const parent = block.closest('.quick-category');
+                    const text = block.textContent.toLowerCase();
+                    if (query === '' || text.includes(query)) {
+                        parent.style.display = '';
+                    } else {
+                        parent.style.display = 'none';
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -5,43 +5,71 @@ return {
 		"nvim-lua/plenary.nvim",
 		{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 		"nvim-tree/nvim-web-devicons",
+		"nvim-telescope/telescope-file-browser.nvim",
 	},
 	config = function()
 		local telescope = require("telescope")
 		local actions = require("telescope.actions")
 
+		local hidden_args = function()
+			return {
+				"--hidden",
+				"--glob",
+				"!.git/*",
+				"--glob",
+				"!node_modules/*",
+				"--glob",
+				"!bazel-*/*",
+			}
+		end
+
 		telescope.setup({
 			defaults = {
-				path_display = { "truncate " },
+				path_display = { "truncate" },
 				mappings = {
 					i = {
-						["<C-k>"] = actions.move_selection_previous, -- move to prev result
-						["<C-j>"] = actions.move_selection_next, -- move to next result
+						["<C-k>"] = actions.move_selection_previous,
+						["<C-j>"] = actions.move_selection_next,
 						["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
 					},
 				},
 				file_ignore_patterns = {
-					"node_modules",
-					".git/",
-					".DS_Store",
+					"^node_modules/",
+					"^%.git/",
+					"^%.cache/",
+					"^bazel%-.*",
+					"^%.venv/",
+					"^venv/",
+					"^__pycache__/",
+					"%.pyc$",
+					"^%.DS_Store$",
+				},
+			},
+			pickers = {
+				find_files = {
+					hidden = true,
+				},
+				oldfiles = {
+					hidden = true,
+					only_cwd = true,
+				},
+				live_grep = {
+					additional_args = hidden_args,
+				},
+				grep_string = {
+					additional_args = hidden_args,
 				},
 			},
 		})
 
 		telescope.load_extension("fzf")
 
-		-- set keymaps
-		local keymap = vim.keymap -- for conciseness
+		local keymap = vim.keymap
 
-		keymap.set("n", "<leader>ff", "<cmd>Telescope find_files hidden=true<CR>", { desc = "Fuzzy find files in cwd" })
+		keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Fuzzy find files in cwd" })
 		keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<CR>", { desc = "Fuzzy find recent files" })
-		keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep hidden=true<CR>", { desc = "Find string in cwd" })
-		keymap.set(
-			"n",
-			"<leader>fw",
-			"<cmd>Telescope grep_string hidden=true<CR>",
-			{ desc = "Find string under cursor in cwd" }
-		)
+		keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<CR>", { desc = "Find string in cwd" })
+		keymap.set("n", "<leader>fw", "<cmd>Telescope grep_string<CR>", { desc = "Find string under cursor in cwd" })
 		keymap.set(
 			"n",
 			"<leader>fb",

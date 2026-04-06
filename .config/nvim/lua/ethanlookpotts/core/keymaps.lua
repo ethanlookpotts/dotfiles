@@ -1,6 +1,6 @@
 -- set leader key to space
-vim.g.mapleader = ","
-vim.g.maplocalleader = ","
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
 local keymap = vim.keymap -- for conciseness
 
@@ -19,7 +19,29 @@ keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
 keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" }) -- increment
 keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
 
--- window management
+-- open cheatsheet
+keymap.set("n", "<leader>ch", "<cmd>!open ~/src/dotfiles/cheatsheet.html<CR>", { desc = "Open cheatsheet" })
+
+-- yank code with file paths for Claude Code
+local yank = require("ethanlookpotts.custom.yank")
+keymap.set("v", "<leader>yr", function()
+	yank.yank_visual_with_path(yank.get_buffer_cwd_relative(), "relative")
+end, { desc = "Yank code with relative path" })
+keymap.set("v", "<leader>ya", function()
+	yank.yank_visual_with_path(yank.get_buffer_absolute(), "absolute")
+end, { desc = "Yank code with absolute path" })
+
+-- git diff view
+keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<CR>", { desc = "Open git diff view" })
+
+------------------- Diagnostics (LSP + Linters) -------------------
+
+keymap.set("n", "<leader>db", "<cmd>Telescope diagnostics bufnr=0<CR>", { desc = "Show buffer diagnostics" })
+keymap.set("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
+keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic" })
+keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
+
+------------------- Window Management -------------------
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" }) -- split window vertically
 keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" }) -- split window horizontally
 keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" }) -- make split windows equal width & height

@@ -1,2 +1,5 @@
 plugin/
 .nvimlog
+
+# macOS
+.DS_Store

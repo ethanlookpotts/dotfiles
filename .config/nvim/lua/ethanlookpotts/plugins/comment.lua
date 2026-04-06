@@ -1,6 +1,5 @@
 return {
   "numToStr/Comment.nvim",
-  event = { "BufReadPre", "BufNewFile" },
   dependencies = {
     "JoosepAlviste/nvim-ts-context-commentstring",
   },
@@ -9,6 +8,8 @@ return {
     local comment = require("Comment")
 
     local ts_context_commentstring = require("ts_context_commentstring.integrations.comment_nvim")
+
+    require("ts_context_commentstring").setup({ enable_autocmd = false })
 
     -- enable comment
     comment.setup({

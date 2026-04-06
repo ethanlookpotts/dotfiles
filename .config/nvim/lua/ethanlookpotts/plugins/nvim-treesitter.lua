@@ -1,7 +1,6 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = { "BufReadPre", "BufNewFile" },
 		build = ":TSUpdate",
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter-textobjects",
@@ -43,6 +42,7 @@ return {
 					"gitignore",
 					"query",
 					"go",
+          "groovy",
 				},
 				incremental_selection = {
 					enable = true,
@@ -57,6 +57,14 @@ return {
 
 			-- enable nvim-ts-context-commentstring plugin for commenting tsx and jsx
 			require("ts_context_commentstring").setup({})
+
+      vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+         group = vim.api.nvim_create_augroup("jenkinsfile_detect", { clear = true }),
+         pattern = { "Jenkinsfile", "*.jenkinsfile" },
+         callback = function()
+             vim.cmd("set filetype=groovy")
+         end
+      })
 		end,
 	},
 }

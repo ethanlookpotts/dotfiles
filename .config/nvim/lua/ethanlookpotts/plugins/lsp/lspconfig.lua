@@ -1,173 +1,86 @@
 return {
 	"neovim/nvim-lspconfig",
-	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 	},
 	config = function()
-		-- import lspconfig plugin
-		local lspconfig = require("lspconfig")
+		local compat = require("ethanlookpotts.core.compat")
 
-		-- import cmp-nvim-lsp plugin
-		local cmp_nvim_lsp = require("cmp_nvim_lsp")
+		compat.with_suppressed_deprecations({ "nvim-lspconfig" }, function()
+			local lspconfig = require("lspconfig")
+			local cmp_nvim_lsp = require("cmp_nvim_lsp")
+			local servers = require("ethanlookpotts.lsp.servers")
+			local keymap = vim.keymap
 
-		local keymap = vim.keymap -- for conciseness
+			-- LSP keybinds for buffers with LSP attached
+			local on_attach = function(client, bufnr)
+				-- Ensure offset_encoding is set (fixes nvim 0.11.1 symbols_to_items error)
+				if not client.offset_encoding then
+					client.offset_encoding = "utf-16"
+				end
 
-		local opts = { noremap = true, silent = true }
-		local on_attach = function(client, bufnr)
-			opts.buffer = bufnr
+				local opts = { buffer = bufnr, noremap = true, silent = true }
+				local function map(mode, lhs, rhs, desc)
+					keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { desc = desc }))
+				end
 
-			-- set keybinds
-			opts.desc = "Show LSP references"
-			keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
+				map("n", "gr", "<cmd>Telescope lsp_references<CR>", "Show LSP references")
+				map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
+				map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", "Show LSP definitions")
+				map("n", "gi", "<cmd>Telescope lsp_implementations<CR>", "Show LSP implementations")
+				map("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", "Show LSP type definitions")
+				map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "See available code actions")
+				map("n", "<leader>rn", vim.lsp.buf.rename, "Smart rename")
+				map("n", "K", vim.lsp.buf.hover, "Show documentation for what is under cursor")
+				map("n", "<leader>rs", ":LspRestart<CR>", "Restart LSP")
+			end
 
-			opts.desc = "Go to declaration"
-			keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
+			-- Enable autocompletion
+			local capabilities = cmp_nvim_lsp.default_capabilities()
 
-			opts.desc = "Show LSP definitions"
-			keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts) -- show lsp definitions
+			-- Set default position encoding to utf-16 (fixes nvim 0.11 warning)
+			capabilities.general = capabilities.general or {}
+			capabilities.general.positionEncodings = { "utf-16", "utf-8" }
 
-			opts.desc = "Show LSP implementations"
-			keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts) -- show lsp implementations
-
-			opts.desc = "Show LSP type definitions"
-			keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
-
-			opts.desc = "See available code actions"
-			keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
-
-			opts.desc = "Smart rename"
-			keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts) -- smart rename
-
-			opts.desc = "Show buffer diagnostics"
-			keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
-
-			opts.desc = "Show line diagnostics"
-			keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts) -- show diagnostics for line
-
-			opts.desc = "Go to previous diagnostic"
-			keymap.set("n", "[d", vim.diagnostic.goto_prev, opts) -- jump to previous diagnostic in buffer
-
-			opts.desc = "Go to next diagnostic"
-			keymap.set("n", "]d", vim.diagnostic.goto_next, opts) -- jump to next diagnostic in buffer
-
-			opts.desc = "Show documentation for what is under cursor"
-			keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
-
-			opts.desc = "Restart LSP"
-			keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
-		end
-
-		-- used to enable autocompletion (assign to every lsp server config)
-		local capabilities = cmp_nvim_lsp.default_capabilities()
-
-		-- Change the Diagnostic symbols in the sign column (gutter)
-		-- (not in youtube nvim video)
-		local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
-		for type, icon in pairs(signs) do
-			local hl = "DiagnosticSign" .. type
-			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-		end
-
-		-- configure html server
-		lspconfig["html"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		-- configure typescript server with plugin
-		lspconfig["tsserver"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		-- configure css server
-		lspconfig["cssls"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		-- configure tailwindcss server
-		lspconfig["tailwindcss"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		-- configure svelte server
-		lspconfig["svelte"].setup({
-			capabilities = capabilities,
-			on_attach = function(client, bufnr)
-				on_attach(client, bufnr)
-
-				vim.api.nvim_create_autocmd("BufWritePost", {
-					pattern = { "*.js", "*.ts" },
-					callback = function(ctx)
-						if client.name == "svelte" then
-							client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.file })
-						end
-					end,
-				})
-			end,
-		})
-
-		-- configure volar (vue) server
-		lspconfig["volar"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		-- configure prisma orm server
-		lspconfig["prismals"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		-- configure graphql language server
-		lspconfig["graphql"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-			filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-		})
-
-		-- configure emmet language server
-		lspconfig["emmet_ls"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-			filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
-		})
-
-		-- configure python server
-		lspconfig["pyright"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		-- configure lua server (with special settings)
-		lspconfig["lua_ls"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-			settings = { -- custom settings for lua
-				Lua = {
-					-- make the language server recognize "vim" global
-					diagnostics = {
-						globals = { "vim" },
-					},
-					workspace = {
-						-- make language server aware of runtime files
-						library = {
-							[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-							[vim.fn.stdpath("config") .. "/lua"] = true,
-						},
+			-- Configure diagnostic symbols
+			local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
+			vim.diagnostic.config({
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = signs.Error,
+						[vim.diagnostic.severity.WARN] = signs.Warn,
+						[vim.diagnostic.severity.HINT] = signs.Hint,
+						[vim.diagnostic.severity.INFO] = signs.Info,
 					},
 				},
-			},
-		})
+			})
 
-		-- configure gopls server
-		lspconfig["gopls"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
+			-- Setup simple servers
+			for _, server_name in ipairs(servers.simple_servers) do
+				lspconfig[server_name].setup({
+					capabilities = capabilities,
+					on_attach = on_attach,
+				})
+			end
+
+			-- Setup custom servers
+			for server_name, config in pairs(servers.custom_servers) do
+				local server_config = vim.tbl_deep_extend("force", {
+					capabilities = capabilities,
+					on_attach = function(client, bufnr)
+						on_attach(client, bufnr)
+						if config.on_attach_extra then
+							config.on_attach_extra(client, bufnr)
+						end
+					end,
+				}, config)
+
+				-- Remove on_attach_extra from final config as it's not a real LSP option
+				server_config.on_attach_extra = nil
+
+				lspconfig[server_name].setup(server_config)
+			end
+		end)
 	end,
 }
