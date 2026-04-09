@@ -1,26 +1,18 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
 		build = ":TSUpdate",
 		dependencies = {
-			"nvim-treesitter/nvim-treesitter-textobjects",
+			{ "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
 			"windwp/nvim-ts-autotag",
 		},
 		config = function()
 			-- import nvim-treesitter plugin
-			local treesitter = require("nvim-treesitter.configs")
+			local treesitter = require("nvim-treesitter")
 
 			-- configure treesitter
-			treesitter.setup({ -- enable syntax highlighting
-				highlight = {
-					enable = true,
-				},
-				-- enable indentation
-				indent = { enable = true },
-				-- enable autotagging (w/ nvim-ts-autotag plugin)
-				autotag = {
-					enable = true,
-				},
+			treesitter.setup({
 				-- ensure these language parsers are installed
 				ensure_installed = {
 					"json",
@@ -42,29 +34,27 @@ return {
 					"gitignore",
 					"query",
 					"go",
-          "groovy",
+					"groovy",
 				},
-				incremental_selection = {
-					enable = true,
-					keymaps = {
-						init_selection = "<C-space>",
-						node_incremental = "<C-space>",
-						scope_incremental = false,
-						node_decremental = "<bs>",
-					},
-				},
+			})
+
+			-- ensure treesitter starts per buffer
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function(ev)
+					pcall(vim.treesitter.start, ev.buf)
+				end,
 			})
 
 			-- enable nvim-ts-context-commentstring plugin for commenting tsx and jsx
 			require("ts_context_commentstring").setup({})
 
-      vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-         group = vim.api.nvim_create_augroup("jenkinsfile_detect", { clear = true }),
-         pattern = { "Jenkinsfile", "*.jenkinsfile" },
-         callback = function()
-             vim.cmd("set filetype=groovy")
-         end
-      })
+			vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+				group = vim.api.nvim_create_augroup("jenkinsfile_detect", { clear = true }),
+				pattern = { "Jenkinsfile", "*.jenkinsfile" },
+				callback = function()
+					vim.cmd("set filetype=groovy")
+				end,
+			})
 		end,
 	},
 }
