@@ -163,10 +163,12 @@ sethostip() {
   local echo_output=${1:-true}
   local ip
 
-  ip=$(ifconfig 2>/dev/null | grep "inet " | grep -Fv 127.0.0.1 | grep 10. | awk '{print $2}' | head -1)
+  ip=$(ifconfig 2>/dev/null | grep "inet " | grep -Fv 127.0.0.1 | grep -E " (10|172\.(1[6-9]|2[0-9]|3[0-1])|192\.168)\." | awk '{print $2}' | head -1)
 
   if [[ -z "$ip" ]]; then
-    echo "Warning: Could not determine host IP address" >&2
+    if [[ "$echo_output" == "true" ]]; then
+      echo "Warning: Could not determine host IP address" >&2
+    fi
     return 1
   fi
 
