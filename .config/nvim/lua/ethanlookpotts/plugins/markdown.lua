@@ -2,8 +2,8 @@ return {
   "iamcco/markdown-preview.nvim",
   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
   ft = { "markdown" },
-  build = "cd app && npm install --no-package-lock",
-  init = function()
-    vim.g.mkdp_filetypes = { "markdown" }
+  build = function()
+    require("lazy").load({ plugins = { "markdown-preview.nvim" } })
+    vim.fn["mkdp#util#install"]()
   end,
 }
