@@ -18,7 +18,6 @@
     "type": "command",
     "command": "ccusage statusline"
   },
-  "agentPushNotifEnabled": true,
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
@@ -36,10 +35,23 @@
   },
   "extraKnownMarketplaces": {
     "voltagent-subagents": {
-      "source": { "source": "github", "repo": "VoltAgent/awesome-claude-code-subagents" }
+      "source": {
+        "source": "github",
+        "repo": "VoltAgent/awesome-claude-code-subagents"
+      }
     },
     "karpathy-skills": {
-      "source": { "source": "github", "repo": "forrestchang/andrej-karpathy-skills" }
+      "source": {
+        "source": "github",
+        "repo": "forrestchang/andrej-karpathy-skills"
+      }
+    },
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
     }
-  }
+  },
+  "agentPushNotifEnabled": true
 }
