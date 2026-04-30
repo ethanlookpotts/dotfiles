@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(humanizer)",
+      "Read(~/AGENTS.local.md)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git show:*)",
+      "Bash(git worktree list:*)",
+      "Bash(rg:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh issue view:*)"
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "ccusage statusline"
+  },
+  "agentPushNotifEnabled": true,
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "voltagent-core-dev@voltagent-subagents": true,
+    "voltagent-lang@voltagent-subagents": true,
+    "voltagent-infra@voltagent-subagents": true,
+    "voltagent-qa-sec@voltagent-subagents": true,
+    "voltagent-dev-exp@voltagent-subagents": true
+  },
+  "extraKnownMarketplaces": {
+    "voltagent-subagents": {
+      "source": { "source": "github", "repo": "VoltAgent/awesome-claude-code-subagents" }
+    },
+    "karpathy-skills": {
+      "source": { "source": "github", "repo": "forrestchang/andrej-karpathy-skills" }
+    }
+  }
+}
