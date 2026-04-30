@@ -97,15 +97,6 @@ if command -v pyenv &> /dev/null; then
   pip() { pyenv > /dev/null 2>&1; command pip "$@"; }
 fi
 
-# Lazy load thefuck
-if command -v thefuck &> /dev/null; then
-  fuck() {
-    unset -f fuck
-    eval "$(thefuck --alias)"
-    fuck "$@"
-  }
-fi
-
 ################################################################################
 # Custom Functions
 ################################################################################
