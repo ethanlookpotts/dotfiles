@@ -20,7 +20,7 @@ keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" }) -- incremen
 keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
 
 -- open cheatsheet
-keymap.set("n", "<leader>ch", "<cmd>!open https://ethanlook.github.io/dotfiles/<CR>", { desc = "Open cheatsheet" })
+keymap.set("n", "<leader>ch", "<cmd>!open https://ethanlookpotts.github.io/dotfiles/<CR>", { desc = "Open cheatsheet" })
 
 -- yank code with file paths for Claude Code
 local yank = require("ethanlookpotts.custom.yank")
