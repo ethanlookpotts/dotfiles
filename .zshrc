@@ -32,6 +32,7 @@ alias gs="watch -n 5 -c git -c color.ui=always status -s"
 alias vim="nvim"
 alias vi="nvim"
 alias ff="nvim -c 'Telescope find_files hidden=true'"
+alias cheat="open https://ethanlookpotts.github.io/dotfiles/"
 
 export EDITOR=nvim
 
@@ -180,6 +181,32 @@ sethostip() {
 }
 
 sethostip false
+
+# Create-or-attach a tmux session. With no arg, names the session after the
+# current directory's basename. With an arg matching ~/src/<name>, cd there
+# first. Works inside or outside an existing tmux client.
+work() {
+  if ! command -v tmux &>/dev/null; then
+    echo "work: tmux not installed" >&2
+    return 1
+  fi
+
+  local target="${1:-$(basename "$PWD")}"
+  local sname="${target//[.:]/_}"
+  local dir="$HOME/src/$target"
+
+  [[ -d "$dir" ]] && cd "$dir"
+
+  if [[ -n "$TMUX" ]]; then
+    tmux has-session -t "$sname" 2>/dev/null || tmux new-session -d -s "$sname"
+    tmux switch-client -t "$sname"
+  else
+    tmux new-session -A -s "$sname"
+  fi
+}
+
+_work() { _path_files -W ~/src -/ }
+compdef _work work
 
 ################################################################################
 # Keybindings
