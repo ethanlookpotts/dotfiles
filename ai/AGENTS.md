@@ -87,6 +87,12 @@ Append (don't replace) if either line is missing. This is per-machine, per-repo,
 - Never use `docs/superpowers/specs/`, `docs/superpowers/plans/`, or any path that would commit to a shared repo.
 - Create `.notes/plans/` if it doesn't exist.
 
+## Tool-specific extensions
+
+Import the tool-specific extension below:
+
+- Claude: @~/src/dotfiles/ai/claude/CLAUDE.md
+
 ## Environment-specific overrides
 
 If `~/AGENTS.local.md` exists, read it now and treat its instructions as overrides to anything above. This file is per-machine (different usernames, branch-naming conventions, environment-specific rules) and is not part of the shared dotfiles.
