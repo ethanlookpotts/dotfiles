@@ -1,42 +1,67 @@
 # dotfiles
 
-I like a lot of [this blog post](https://www.josean.com/posts/terminal-setup) for my OOB setup.
+Personal dev environment: terminal, editor, AI tools.
 
-Set up git:
+## Prerequisites
+
+Run these once on a fresh machine before `./install.sh`. None of them are idempotent in a way that's safe to re-run automatically, so they live here, not in the install script.
+
+1. Xcode Command Line Tools:
+   ```
+   xcode-select --install
+   ```
+2. Homebrew:
+   ```
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+3. iTerm2:
+   ```
+   brew install --cask iterm2
+   ```
+4. Oh My Zsh:
+   ```
+   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
+   ```
+5. Powerlevel10k theme:
+   ```
+   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+     ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+   ```
+6. Zsh plugins (referenced by `.zshrc`):
+   ```
+   git clone https://github.com/zsh-users/zsh-autosuggestions \
+     ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+   git clone https://github.com/zsh-users/zsh-syntax-highlighting \
+     ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+   ```
+
+## Setup
 
 ```
-git config --global user.email "ethanlookpotts@gmail.com"
-git config --global user.name "Ethan Look-Potts"
+git clone git@github.com:ethanlookpotts/dotfiles.git ~/src/dotfiles
+cd ~/src/dotfiles
+./install.sh
 ```
 
-[Add a public key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) to Github.
+Then follow the post-install checklist that `install.sh` prints.
 
-Clone this repo and link dotfiles:
-
-```
-git clone git@github.com:ethanlookpotts/dotfiles.git
-```
-
-Follow [this blog](https://www.josean.com/posts/terminal-setup) to install most of the things you like. Then:
+## Updating
 
 ```
-brew install tmux
-brew install thefuck
-brew install neovim
-brew install ripgrep
-brew install fzf
-brew install watch
-ln -s ~/src/dotfiles/.tmux.conf ~/.tmux.conf
-ln -s ~/src/dotfiles/.zshrc ~/.zshrc
-ln -s ~/src/dotfiles/.config/nvim ~/.config/nvim
+git -C ~/src/dotfiles pull
+~/src/dotfiles/install.sh
 ```
 
-### Private Configuration
+`install.sh` is idempotent — safe to re-run any time.
 
-For machine-specific settings (credentials, etc.), create `~/.zshrc.local`.
+## Per-machine overrides
 
-iTerm color theme: https://github.com/bluz71/vim-moonfly-colors/blob/master/extras/moonfly.itermcolors
+Three files in `$HOME` are gitignored and per-machine. `install.sh` creates empty stubs where needed; edit them to override anything from the shared dotfiles:
 
-### Mobile (Termius on iPhone)
+- `~/.zshrc.local` — shell-level overrides (credentials, aliases)
+- `~/AGENTS.local.md` — AI-tool conventions (username, branch naming, environment-specific rules)
+- `~/.claude/settings.local.json` — Claude Code settings overrides (disable plugins, allowlist additions)
 
-See [TERMIUS.md](TERMIUS.md).
+## Mobile
+
+iPhone setup via Termius is documented separately: [TERMIUS.md](TERMIUS.md).
