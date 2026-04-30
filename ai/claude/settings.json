@@ -16,7 +16,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "ccusage statusline"
+    "command": "npx ccusage@latest statusline"
   },
   "agentPushNotifEnabled": true,
   "enabledPlugins": {

@@ -44,8 +44,6 @@ stale_warn() {
 # 1. Brew packages (no-op if brew missing — work-laptop friendly)
 if command -v brew &>/dev/null; then
   brew install --quiet tmux thefuck neovim ripgrep fzf watch gh
-  command -v bun &>/dev/null || brew install --quiet bun
-  command -v ccusage &>/dev/null || bun install -g ccusage
 else
   echo "warning: brew not found — skipping package installs"
 fi
