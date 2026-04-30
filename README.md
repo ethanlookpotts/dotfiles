@@ -36,3 +36,7 @@ ln -s ~/src/dotfiles/.config/nvim ~/.config/nvim
 For machine-specific settings (credentials, etc.), create `~/.zshrc.local`.
 
 iTerm color theme: https://github.com/bluz71/vim-moonfly-colors/blob/master/extras/moonfly.itermcolors
+
+### Mobile (Termius on iPhone)
+
+See [TERMIUS.md](TERMIUS.md).
