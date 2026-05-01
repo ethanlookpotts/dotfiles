@@ -33,6 +33,7 @@ end, { desc = "Yank code with absolute path" })
 
 -- git diff view
 keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<CR>", { desc = "Open git diff view" })
+keymap.set("n", "<leader>gD", "<cmd>DiffviewOpen main...HEAD<CR>", { desc = "Git diff against main" })
 
 ------------------- Diagnostics (LSP + Linters) -------------------
 
